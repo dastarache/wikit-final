@@ -9,7 +9,7 @@ $nombreBaseDatos = Conexion::getDatabaseName();
 // Guardamos el nombre de la base de datos en la sesión
 $_SESSION['ah'] = $nombreBaseDatos;
 
- $nombreBaseDatos;
+$nombreBaseDatos;
 
 $query = "SELECT * FROM information_schema.tables WHERE table_schema = '$nombreBaseDatos' AND table_name = 'usuario'";
 $resultado = Conexion::conectar()->prepare($query);
@@ -17,7 +17,7 @@ $resultado->execute();
 
 if ($resultado->rowCount() > 0) {
 
-    echo "
+  echo "
     <script type='text/javascript'>
 
         window.location.href = '../../WIKIT/index.php';
@@ -29,7 +29,7 @@ if ($resultado->rowCount() > 0) {
 } else {
 
   $db = $_REQUEST['db'];
-  if ($nombreBaseDatos== $db) {
+  if ($nombreBaseDatos == $db) {
 
     $query1 = "CREATE TABLE `categoria` (
     `id` int(11) NOT NULL,
@@ -58,7 +58,10 @@ if ($resultado->rowCount() > 0) {
     `contenido` text NOT NULL,
     `ruta` varchar(200) NOT NULL
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-  
+
+    
+
+
   CREATE TABLE `likes` (
     `id` int(11) NOT NULL,
     `id_curso` int(11) NOT NULL,
@@ -78,6 +81,15 @@ if ($resultado->rowCount() > 0) {
     `ref_pago` varchar(200) NOT NULL
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
   
+    CREATE TABLE `mt_apoyo` (
+    `id` int(11) NOT NULL,
+    `img_1` varchar(200) NOT NULL,
+    `img_2` varchar(200) NOT NULL,
+    `img_3` varchar(200) NOT NULL,
+    `img_4` varchar(200) NOT NULL,
+    `id_curso` int(11) NOT NULL
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
   CREATE TRIGGER REPOR_CER_BI BEFORE UPDATE ON pagos 
         FOR EACH ROW 
         BEGIN 
@@ -97,7 +109,20 @@ if ($resultado->rowCount() > 0) {
     `permiso` int(11) NOT NULL
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
   
-  
+  CREATE TABLE `foro`(
+  id int(11) NOT NULL,
+  contenido_foro text NOT NULL,
+  nombre varchar (100) NOT NULL,
+  fecha_publicacion datetime NOT NULL
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+  ALTER TABLE `mt_apoyo`
+    ADD PRIMARY KEY (`id`);
+
+  ALTER TABLE `foro`
+    ADD PRIMARY KEY (`id`);
+
+
   ALTER TABLE `categoria`
     ADD PRIMARY KEY (`id`);
   
@@ -131,12 +156,16 @@ if ($resultado->rowCount() > 0) {
   
   ALTER TABLE `pagos`
     MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-  
+
+    ALTER TABLE `foro`
+    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+      ALTER TABLE `mt_apoyo`
+    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
   
   ALTER TABLE `usuario`
     MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
   COMMIT;
-  
   ";
 
     $resultado1 = Conexion::conectar()->prepare($query1);
@@ -150,44 +179,78 @@ if ($resultado->rowCount() > 0) {
       $resultado = Conexion::conectar()->prepare($query);
 
       if ($resultado->execute()) {
+        $query11 = "CREATE FUNCTION gestionarCarrusel(
+    p_id INT,
+    p_id_curso INT,
+    p_img_1 VARCHAR(255),
+    p_img_2 VARCHAR(255),
+    p_img_3 VARCHAR(255),
+    p_img_4 VARCHAR(255)
+) RETURNS BOOLEAN
+BEGIN
+    DECLARE v_exists INT;
+    
+  
+    SELECT COUNT(*) INTO v_exists
+    FROM mt_apoyo
+    WHERE id = p_id;
+    
+    IF v_exists = 0 THEN
+      
+        INSERT INTO mt_apoyo (id_curso, img_1, img_2, img_3, img_4)
+        VALUES (p_id_curso, p_img_1, p_img_2, p_img_3, p_img_4);
+    ELSE
+     
+        UPDATE mt_apoyo
+        SET id_curso = p_id_curso,
+            img_1 = p_img_1,
+            img_2 = p_img_2,
+            img_3 = p_img_3,
+            img_4 = p_img_4
+        WHERE id = p_id;
+    END IF;
+    
+    RETURN TRUE;
+END ;";
+      $resultado11 = Conexion::conectar()->prepare($query11);
+      if ($resultado11->execute()) {
+        $usuario = $_REQUEST['usuario'];
+        $contra = $_REQUEST['contra'];
+        $correo = $_REQUEST['correo'];
+        $pass = password_hash($contra, PASSWORD_BCRYPT);
 
-           $usuario = $_REQUEST['usuario'];
-           $contra = $_REQUEST['contra'];
-           $correo = $_REQUEST['correo'];
-           $pass = password_hash($contra, PASSWORD_BCRYPT);
-
-          $query2 = "INSERT INTO usuario(nombre,correo,contrasena,perfil,fecha,permiso)
+        $query2 = "INSERT INTO usuario(nombre,correo,contrasena,perfil,fecha,permiso)
           VALUES('$usuario','$correo','$pass','logoiano.png',now(),2)";
-          $resultado2 = Conexion::conectar()->prepare($query2);
-          if($resultado2->execute())
-          {
+        $resultado2 = Conexion::conectar()->prepare($query2);
+        if ($resultado2->execute()) {
 
-            $query3 = "SELECT * FROM usuario WHERE permiso = 2";
-            $resultado3 = Conexion::conectar()->prepare($query3);
-            $resultado3->execute();
-            if ($resultado3->rowCount() > 0) {
-          
-              // Ruta al archivo que deseas modificar
-              $archivo = '../../index.php';
-          
-              // Leer el contenido actual del archivo (opcional)
-              $contenidoActual = file_get_contents($archivo);
-          
-              // Modificar el contenido (puedes hacer cualquier modificación aquí)
-              $nuevoContenido = str_replace('InstaladorWIKIT/index.html', 'WIKIT/index.php', $contenidoActual);
-          
-              // Escribir el nuevo contenido en el archivo
-              file_put_contents($archivo, $nuevoContenido);
-              echo "
+          $query3 = "SELECT * FROM usuario WHERE permiso = 2";
+          $resultado3 = Conexion::conectar()->prepare($query3);
+          $resultado3->execute();
+          if ($resultado3->rowCount() > 0) {
+
+            // Ruta al archivo que deseas modificar
+            $archivo = '../../index.php';
+
+            // Leer el contenido actual del archivo (opcional)
+            $contenidoActual = file_get_contents($archivo);
+
+            // Modificar el contenido (puedes hacer cualquier modificación aquí)
+            $nuevoContenido = str_replace('InstaladorWIKIT/index.html', 'WIKIT/index.php', $contenidoActual);
+
+            // Escribir el nuevo contenido en el archivo
+            file_put_contents($archivo, $nuevoContenido);
+            echo "
               <script type='text/javascript'>
           
                   window.location.href = '../../WIKIT/index.php';
           
               </script>
-              "; 
-            }
-
+              ";
           }
+
+        }
+      }
 
       }
     }

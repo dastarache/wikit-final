@@ -11,10 +11,9 @@
     </div>
     <div class="col-md-6">
     <label for="nombre" class="form-label">Selecciona Categoria</label>
-      <select name="llave_cate" class="form-select" aria-label="Default select example" required>
-        <option selected>Categoria</option>
+      <select name="llave_cate" class="form-select" aria-label="Default select example" required>    
       <?php while ($filas = $resultado->fetch()) { ?>
-        <option value="<?php echo $filas['id']; ?>"><?php echo $filas['nb_categoria']; ?></option>
+        <option selected value="<?php echo $filas['id']; ?>"><?php echo $filas['nb_categoria']; ?></option>
       <?php } ?>
       </select>
     </div>

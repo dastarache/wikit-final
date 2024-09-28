@@ -107,11 +107,11 @@
   </div>
 </div>
 
-    <script>
+    <!-- <script>
         document.getElementById('miFormulario').addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();  // Previene el envío del formulario
             }
         });
-    </script>
+    </script> -->
 

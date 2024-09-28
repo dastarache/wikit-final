@@ -1,5 +1,5 @@
 <?php
 
-  header('Location: InstaladorWIKIT/index.html');
+  header('Location: WIKIT/index.php');
 
 ?>

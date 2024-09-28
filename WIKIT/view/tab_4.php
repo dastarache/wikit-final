@@ -11,4 +11,4 @@
         <input name="actualizarD" type="submit" class="btn btn-primary" value="Acualizar">
     </div>
 </form><br><br>
-<img style="width: 300px;" src="../assets/img/<?php echo $fotoLog; ?>" alt="">
+<img style="width: 300px;" src="../assets/img/<?php echo $fotoLog; ?>" alt="foto perfil">

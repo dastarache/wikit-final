@@ -5,5 +5,7 @@
 	$resultado = Conexion::conectar()->prepare($query);
 
 	$resultado->execute();
-		
+
+
 ?>
+

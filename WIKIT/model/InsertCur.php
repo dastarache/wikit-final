@@ -15,7 +15,19 @@
 
         </script>
         ";
+    
+    }else{
+        echo "
+        <script type='text/javascript'>
+
+        alert('no se pudo registrar el curso ')
+
+            window.location.href = '../controller/controll.php?seccion=5&tab=3';
+
+        </script>
+        ";
+
 
     }
-
+    
 ?>
